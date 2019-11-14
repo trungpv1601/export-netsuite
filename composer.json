@@ -1,0 +1,19 @@
+{
+  "name": "trungpv1601/export-netsuite",
+  "authors": [
+    {
+      "name": "trungpv",
+      "email": "trungpv1601@gmail.com"
+    }
+  ],
+  "require": {
+    "ryanwinchester/netsuite-php": "^2019.1",
+    "league/climate": "^3.5",
+    "vlucas/phpdotenv": "^3.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
