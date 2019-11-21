@@ -21,7 +21,7 @@ class Service
   /**
    * __construct function
    */
-  public function __construct()
+  public function __construct($type = false)
   {
     $this->config = array(
       // required -------------------------------------
@@ -39,6 +39,9 @@ class Service
 
     $this->service = new NetSuiteService($this->config);
     $this->climate = new CLImate;
+    if ($type) {
+      $this->type = lcfirst($type);
+    }
     $this->path = './data' . '/' . $this->type . '-' . date("Y-m-d");
     //Check if the directory already exists.
     if (!is_dir($this->path)) {
@@ -65,7 +68,7 @@ class Service
    */
   public function setType($type)
   {
-    $this->type = $type;
+    $this->type = lcfirst($type);
   }
 
   /**
@@ -75,7 +78,10 @@ class Service
    */
   public function getBasicSearch()
   {
-    return false;
+    $class = '\\NetSuite\\Classes\\' . ucfirst($this->type) . 'SearchBasic';
+    $searchBasic = new $class();
+
+    return $searchBasic;
   }
 
   /**
@@ -108,7 +114,7 @@ class Service
    */
   public function getListInfo()
   {
-    $this->service->setSearchPreferences(false, 50);
+    $this->service->setSearchPreferences(false, 25);
 
     $request = new SearchRequest();
 
@@ -131,7 +137,7 @@ class Service
    */
   public function getAll()
   {
-    $this->service->setSearchPreferences(false, 50);
+    $this->service->setSearchPreferences(false, 25);
 
     $request = new SearchRequest();
 
@@ -143,15 +149,17 @@ class Service
     $searchResponse = $this->service->search($request);
     if ($searchResponse->searchResult->status->isSuccess) {
       $totalPages = $searchResponse->searchResult->totalPages;
-      $progress = $this->climate->progress()->total($totalPages);
-      $progress->current(1);
-      $searchId = $searchResponse->searchResult->searchId;
-      $pageIndex = $searchResponse->searchResult->pageIndex;
-      file_put_contents($this->path . '/1.json', json_encode($searchResponse->searchResult->recordList->record));
-      for ($i = $pageIndex; $i <= $totalPages; $i++) {
-        $progress->current($i);
-        $data = $this->getAllBySearchId($searchId, $i);
-        file_put_contents($this->path . '/' . $i . '.json', json_encode($data));
+      if ($totalPages > 0) {
+        $progress = $this->climate->progress()->total($totalPages);
+        $progress->current(1);
+        $searchId = $searchResponse->searchResult->searchId;
+        $pageIndex = $searchResponse->searchResult->pageIndex;
+        file_put_contents($this->path . '/1.json', json_encode($searchResponse->searchResult->recordList->record));
+        for ($i = $pageIndex; $i <= $totalPages; $i++) {
+          $progress->current($i);
+          $data = $this->getAllBySearchId($searchId, $i);
+          file_put_contents($this->path . '/' . $i . '.json', json_encode($data));
+        }
       }
     }
   }
@@ -190,6 +198,7 @@ class Service
       'ALL' => 'Get All',
       'LAST' => 'Get Last x pages',
       'GET' => 'Get record',
+      'GET_INFO' => 'Get info',
     ];
     $input    = $this->climate->radio('Please send me one of the following:', $featureOptions);
     $option = $input->prompt();
@@ -205,8 +214,9 @@ class Service
         $res = $this->getListInfo();
         if ($res) {
           $totalPages = $res->totalPages;
+          $totalRecords = $res->totalRecords;
           $searchId = $res->searchId;
-          $input = $this->climate->input('How many pages? (Total: ' . $totalPages . '): ');
+          $input = $this->climate->input('How many page? (Total: ' . $totalRecords . ' records with ' . $totalPages . ' pages): ');
           $num = $input->prompt();
           $progress = $this->climate->progress()->total($num);
           $index = 1;
@@ -217,6 +227,16 @@ class Service
             $progress->current($index);
             $index++;
           }
+        } else {
+          $this->climate->red('Something went wrong.');
+        }
+        break;
+      case 'GET_INFO':
+        $this->climate->border('*');
+        $this->climate->blue('Loading ...');
+        $res = $this->getListInfo();
+        if ($res) {
+          $this->climate->dump($res);
         } else {
           $this->climate->red('Something went wrong.');
         }
