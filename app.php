@@ -372,8 +372,8 @@ if ($response == 'ALL') {
   $excludes = [];
   $all = array_diff($featureOptions, $excludes);
   for ($i = 0; $i < count($all); $i++) {
+    $feature = $all[$i];
     try {
-      $feature = $all[$i];
       $climate->border('*');
       $climate->blue($feature . ' Downloading ...');
       if ($features[$feature]['class']) {
@@ -385,6 +385,7 @@ if ($response == 'ALL') {
         $service->getAll();
       }
     } catch (\Exception $e) {
+      error_log($feature);
       error_log($e);
     }
   }
@@ -394,8 +395,8 @@ if ($response == 'ALL') {
   $response = $input->prompt();
   $ti = microtime(true);
   for ($i = 0; $i < count($response); $i++) {
+    $feature = $response[$i];
     try {
-      $feature = $response[$i];
       $climate->border('*');
       $climate->blue($feature . ' Downloading ...');
       if ($features[$feature]['class']) {
@@ -407,6 +408,7 @@ if ($response == 'ALL') {
         $service->getAll();
       }
     } catch (\Exception $e) {
+      error_log($feature);
       error_log($e);
     }
   }

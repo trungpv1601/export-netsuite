@@ -156,9 +156,14 @@ class Service
         $pageIndex = $searchResponse->searchResult->pageIndex;
         file_put_contents($this->path . '/1.json', json_encode($searchResponse->searchResult->recordList->record));
         for ($i = $pageIndex; $i <= $totalPages; $i++) {
-          $progress->current($i);
-          $data = $this->getAllBySearchId($searchId, $i);
-          file_put_contents($this->path . '/' . $i . '.json', json_encode($data));
+          try {
+            $progress->current($i);
+            $data = $this->getAllBySearchId($searchId, $i);
+            file_put_contents($this->path . '/' . $i . '.json', json_encode($data));
+          } catch (\Exception $e) {
+            error_log('Type: ' . $this->type . ' - Page: '. $i . ' - Total: ' . $totalPages);
+            error_log($e);
+          }
         }
       }
     }
