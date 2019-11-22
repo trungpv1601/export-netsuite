@@ -1,5 +1,5 @@
 <?php
-
+ini_set('error_log', "errors.log");
 /**
  * trungpv
  * 
@@ -368,19 +368,24 @@ array_walk($features, function ($value, $key) use (&$featureOptions) {
 
 if ($response == 'ALL') {
   $ti = microtime(true);
-  $excludes = ['Opportunity', 'Estimate', 'SalesOrder', 'Lead', 'Prospect', 'Customer'];
+  // $excludes = ['Opportunity', 'Estimate', 'SalesOrder', 'Lead', 'Prospect', 'Customer'];
+  $excludes = [];
   $all = array_diff($featureOptions, $excludes);
   for ($i = 0; $i < count($all); $i++) {
-    $feature = $all[$i];
-    $climate->border('*');
-    $climate->blue($feature . ' Downloading ...');
-    if ($features[$feature]['class']) {
-      $class = '\\App\\Services\\' . $feature;
-      $service = new $class();
-      $service->getAll();
-    } else {
-      $service = new Service($feature);
-      $service->getAll();
+    try {
+      $feature = $all[$i];
+      $climate->border('*');
+      $climate->blue($feature . ' Downloading ...');
+      if ($features[$feature]['class']) {
+        $class = '\\App\\Services\\' . $feature;
+        $service = new $class();
+        $service->getAll();
+      } else {
+        $service = new Service($feature);
+        $service->getAll();
+      }
+    } catch (\Exception $e) {
+      error_log($e);
     }
   }
   echo sprintf("*** Finished in %01.1f mins *** \n", (microtime(true) - $ti) / 60);
@@ -389,16 +394,20 @@ if ($response == 'ALL') {
   $response = $input->prompt();
   $ti = microtime(true);
   for ($i = 0; $i < count($response); $i++) {
-    $feature = $response[$i];
-    $climate->border('*');
-    $climate->blue($feature . ' Downloading ...');
-    if ($features[$feature]['class']) {
-      $class = '\\App\\Services\\' . $feature;
-      $service = new $class();
-      $service->getAll();
-    } else {
-      $service = new Service($feature);
-      $service->getAll();
+    try {
+      $feature = $response[$i];
+      $climate->border('*');
+      $climate->blue($feature . ' Downloading ...');
+      if ($features[$feature]['class']) {
+        $class = '\\App\\Services\\' . $feature;
+        $service = new $class();
+        $service->getAll();
+      } else {
+        $service = new Service($feature);
+        $service->getAll();
+      }
+    } catch (\Exception $e) {
+      error_log($e);
     }
   }
   echo sprintf("*** Finished in %01.1f mins *** \n", (microtime(true) - $ti) / 60);

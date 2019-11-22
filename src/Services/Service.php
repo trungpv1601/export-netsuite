@@ -114,7 +114,7 @@ class Service
    */
   public function getListInfo()
   {
-    $this->service->setSearchPreferences(false, 25);
+    $this->service->setSearchPreferences(false, 10);
 
     $request = new SearchRequest();
 
@@ -137,7 +137,7 @@ class Service
    */
   public function getAll()
   {
-    $this->service->setSearchPreferences(false, 25);
+    $this->service->setSearchPreferences(false, 10);
 
     $request = new SearchRequest();
 
