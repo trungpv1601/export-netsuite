@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use NetSuite\Classes\SearchStringField;
+use NetSuite\Classes\TransactionSearchBasic;
+
 class Estimate extends Service
 {
   protected $type = 'estimate';

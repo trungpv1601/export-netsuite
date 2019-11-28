@@ -26,6 +26,24 @@ $input    = $climate->radio('Please send me one of the following:', $options);
 $response = $input->prompt();
 
 $features = [
+  'Opportunity' => [
+    'class' => false
+  ],
+  'Estimate' => [
+    'class' => true
+  ],
+  'SalesOrder' => [
+    'class' => true
+  ],
+  'Lead' => [
+    'class' => true
+  ],
+  'Prospect' => [
+    'class' => true
+  ],
+  'Customer' => [
+    'class' => true
+  ],
   'InventoryDetail' => [
     'class' => false
   ],
@@ -340,24 +358,6 @@ $features = [
   ],
   'VendorSubsidiaryRelationship' => [
     'class' => false
-  ],
-  'Opportunity' => [
-    'class' => false
-  ],
-  'Estimate' => [
-    'class' => true
-  ],
-  'SalesOrder' => [
-    'class' => true
-  ],
-  'Lead' => [
-    'class' => true
-  ],
-  'Prospect' => [
-    'class' => true
-  ],
-  'Customer' => [
-    'class' => true
   ],
 ];
 
